@@ -3,8 +3,6 @@ import {getCurrency} from '../api/CurrenciesAPI';
 import CurrenciesCode from "../ts/CurrenciesCode";
 import "../css/cssPages/currencies.css";
 import {LiaExchangeAltSolid} from "react-icons/lia";
-import {IoMdClose} from "react-icons/io";
-import {LuEye} from "react-icons/lu";
 import {FaChartLine, FaEye} from "react-icons/fa6";
 import {IoClose} from "react-icons/io5";
 
