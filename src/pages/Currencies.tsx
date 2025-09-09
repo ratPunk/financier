@@ -5,7 +5,7 @@ import "../css/cssPages/currencies.css";
 import {LiaExchangeAltSolid} from "react-icons/lia";
 import {IoMdClose} from "react-icons/io";
 import {LuEye} from "react-icons/lu";
-import {FaEye} from "react-icons/fa";
+import {FaChartLine, FaEye} from "react-icons/fa6";
 import {IoClose} from "react-icons/io5";
 
 interface trackedCurrenciesObject {
@@ -49,7 +49,7 @@ function Currencies() {
         code.label.toLowerCase().includes(rightSearch.toLowerCase())
     );
 
-    const handleChange = (e:any) => {
+    const handleChange = (e: any) => {
         const value = e.target.value;
         if (value === '') {
             setMainCurrenciesQuantity('');
@@ -121,8 +121,15 @@ function Currencies() {
                                 }}
                                 className={`currency-btn ${mainCurrencies === code.code ? 'active' : ''}`}
                             >
+                                <span className={"currency-code-and-name"}>
                                 <span>{code.code}</span>
                                 <span>{code.label}</span>
+                                    </span>
+                                {React.createElement(FaChartLine as React.ComponentType<any>, {
+                                    size: 34, // изменить размер
+                                    color: "blue", // изменить цвет
+                                    className: "my-icon-class" // добавить CSS класс
+                                })}
                             </div>
                         ))}
                     </div>
@@ -144,11 +151,11 @@ function Currencies() {
                             </div>
                             : <p>Выберете валюту</p>}
                         <div className={"exchange"} onClick={handleClickExchange}>
-                        {React.createElement(LiaExchangeAltSolid as React.ComponentType<any>, {
-                            size: 34, // изменить размер
-                            color: "blue", // изменить цвет
-                            className: "my-icon-class" // добавить CSS класс
-                        })}
+                            {React.createElement(LiaExchangeAltSolid as React.ComponentType<any>, {
+                                size: 34, // изменить размер
+                                color: "blue", // изменить цвет
+                                className: "my-icon-class" // добавить CSS класс
+                            })}
                         </div>
                         {rates ?
                             <div>
@@ -188,8 +195,15 @@ function Currencies() {
                                 }}
                                 className={`currency-btn ${secondCurrencies === code.code ? 'active' : ''}`}
                             >
+                               <span className={"currency-code-and-name"}>
                                 <span>{code.code}</span>
                                 <span>{code.label}</span>
+                                    </span>
+                                {React.createElement(FaChartLine as React.ComponentType<any>, {
+                                    size: 34, // изменить размер
+                                    color: "blue", // изменить цвет
+                                    className: "my-icon-class" // добавить CSS класс
+                                })}
                             </div>
                         ))}
                     </div>
@@ -206,49 +220,52 @@ function Currencies() {
                     )
                     .sort((a, b) => b.id - a.id)
                     .map((tracked) => (
-                    <div className={"currency-record"}>
-                    <div
-                        key={tracked.mainCurrencies}
-                        onClick={() => {
-
-                        }}
-                        className={`currency-tracked-btn`}
-                    >
-                        <span>{tracked.mainCurrencies}</span>
-                        {React.createElement(LiaExchangeAltSolid as React.ComponentType<any>, {
-                            size: 34,
-                            color: "black",
-                            className: "my-icon-class"
-                        })}
-                        <span>{tracked.secondCurrencies}</span>
-                    </div>
-                        <div className={`currency-tracked-btn-actions`}>
-                            <button
-                                className={"close-btn"}
+                        <div className={"currency-record"}>
+                            <div
+                                key={tracked.mainCurrencies}
                                 onClick={() => {
-                                setTrackedCurrencies(
-                                    trackedCurrencies.filter(item => item.id !== tracked.id)
-                                );
-                            }}
+
+                                }}
+                                className={`currency-tracked-btn`}
                             >
-                                {React.createElement(IoClose as React.ComponentType<any>, {
+                                <span>{tracked.mainCurrencies}</span>
+                                {React.createElement(LiaExchangeAltSolid as React.ComponentType<any>, {
                                     size: 34,
-                                    color: "#ee4343",
+                                    color: "black",
                                     className: "my-icon-class"
                                 })}
-                            </button>
-                            <button
-                                className={"eye-btn"}
-                                onClick={() => {setMainCurrencies(tracked.mainCurrencies); setSecondCurrencies(tracked.secondCurrencies);}}>
-                                {React.createElement(FaEye as React.ComponentType<any>, {
-                                    size: 34,
-                                    color: "#4361ee",
-                                    className: "my-icon-class"
-                                })}
-                            </button>
+                                <span>{tracked.secondCurrencies}</span>
+                            </div>
+                            <div className={`currency-tracked-btn-actions`}>
+                                <button
+                                    className={"close-btn"}
+                                    onClick={() => {
+                                        setTrackedCurrencies(
+                                            trackedCurrencies.filter(item => item.id !== tracked.id)
+                                        );
+                                    }}
+                                >
+                                    {React.createElement(IoClose as React.ComponentType<any>, {
+                                        size: 34,
+                                        color: "#ee4343",
+                                        className: "my-icon-class"
+                                    })}
+                                </button>
+                                <button
+                                    className={"eye-btn"}
+                                    onClick={() => {
+                                        setMainCurrencies(tracked.mainCurrencies);
+                                        setSecondCurrencies(tracked.secondCurrencies);
+                                    }}>
+                                    {React.createElement(FaEye as React.ComponentType<any>, {
+                                        size: 34,
+                                        color: "#4361ee",
+                                        className: "my-icon-class"
+                                    })}
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
             </div>
         </div>
     );

@@ -11,7 +11,7 @@ function Header() {
                 <div className={"logo"}>
                     {React.createElement(TbHexagonLetterFFilled as React.ComponentType<any>, {
                         size: 34, // изменить размер
-                        color: "blue", // изменить цвет
+                        color: "#4361ee", // изменить цвет
                         className: "my-icon-class" // добавить CSS класс
                     })}
                     <span>Financier</span>
