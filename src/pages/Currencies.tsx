@@ -126,8 +126,8 @@ function Currencies() {
                                 <span>{code.label}</span>
                                     </span>
                                 <div>
-                                {React.createElement(FaChartLine as React.ComponentType<any>, {
-                                    size: 34,
+                                {code.chart && React.createElement(FaChartLine as React.ComponentType<any>, {
+                                    size: 32,
                                     color: "black",
                                     className: "my-icon-class"
                                 })}
@@ -138,7 +138,7 @@ function Currencies() {
                 </div>
 
                 <div className={"currency-info"}>
-                    <div className={"main-currency"}>
+                    <div className={"main-currency-info"}>
                         {rates ?
                             <div>
                                 <p>{mainCurrencies}</p>
@@ -174,6 +174,9 @@ function Currencies() {
                             </div>
                             : <p>Выберете сравнительную валюту</p>}
                     </div>
+                    <div className={"currency-chart-historical-data"}>
+
+                    </div>
                     <div className={"currency-button"}>
                         <button className={"action-btn"} onClick={handleClick}>Отслеживать</button>
                     </div>
@@ -203,8 +206,8 @@ function Currencies() {
                                 <span>{code.label}</span>
                                     </span>
                                 <div>
-                                    {React.createElement(FaChartLine as React.ComponentType<any>, {
-                                        size: 34,
+                                    {code.chart && React.createElement(FaChartLine as React.ComponentType<any>, {
+                                        size: 32,
                                         color: "black",
                                         className: "my-icon-class"
                                     })}
