@@ -1,6 +1,5 @@
 import React from 'react';
 import "../css/cssComponents/header.css";
-import {Link} from "react-router-dom";
 import {TbHexagonLetterFFilled} from "react-icons/tb";
 
 function Header() {
@@ -10,9 +9,9 @@ function Header() {
             <div className={"left-side"}>
                 <div className={"logo"}>
                     {React.createElement(TbHexagonLetterFFilled as React.ComponentType<any>, {
-                        size: 34, // изменить размер
-                        color: "#4361ee", // изменить цвет
-                        className: "my-icon-class" // добавить CSS класс
+                        size: 34,
+                        color: "#4361ee",
+                        className: "my-icon-class"
                     })}
                     <span>Financier</span>
                 </div>
