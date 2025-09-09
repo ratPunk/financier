@@ -100,8 +100,10 @@ function Currencies() {
 
     return (
         <div id={"Currencies"}>
+            <div className={"main-container"}>
             <div className={"currencies-main"}>
-                <div className={"currency-column"}>
+                <div className={"currency-column main-currency-column"}>
+                    <p>Основная валюта</p>
                     <input
                         type="text"
                         placeholder="Поиск валюты..."
@@ -123,11 +125,13 @@ function Currencies() {
                                 <span>{code.code}</span>
                                 <span>{code.label}</span>
                                     </span>
+                                <div>
                                 {React.createElement(FaChartLine as React.ComponentType<any>, {
-                                    size: 34, // изменить размер
-                                    color: "blue", // изменить цвет
-                                    className: "my-icon-class" // добавить CSS класс
+                                    size: 34,
+                                    color: "black",
+                                    className: "my-icon-class"
                                 })}
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -147,12 +151,12 @@ function Currencies() {
                                 />
 
                             </div>
-                            : <p>Выберете валюту</p>}
+                            : <p>Выберете основную валюту</p>}
                         <div className={"exchange"} onClick={handleClickExchange}>
                             {React.createElement(LiaExchangeAltSolid as React.ComponentType<any>, {
-                                size: 34, // изменить размер
-                                color: "blue", // изменить цвет
-                                className: "my-icon-class" // добавить CSS класс
+                                size: 32,
+                                color: "#4361ee",
+                                className: "my-icon-class"
                             })}
                         </div>
                         {rates ?
@@ -168,14 +172,15 @@ function Currencies() {
 
 
                             </div>
-                            : <p>Выберете валюту</p>}
+                            : <p>Выберете сравнительную валюту</p>}
                     </div>
                     <div className={"currency-button"}>
                         <button className={"action-btn"} onClick={handleClick}>Отслеживать</button>
                     </div>
                 </div>
 
-                <div className={"currency-column"}>
+                <div className={"currency-column second-currency-column"}>
+                    <p>Сравнительная валюта валюта</p>
                     <input
                         type="text"
                         placeholder="Поиск валюты..."
@@ -197,18 +202,20 @@ function Currencies() {
                                 <span>{code.code}</span>
                                 <span>{code.label}</span>
                                     </span>
-                                {React.createElement(FaChartLine as React.ComponentType<any>, {
-                                    size: 34, // изменить размер
-                                    color: "blue", // изменить цвет
-                                    className: "my-icon-class" // добавить CSS класс
-                                })}
+                                <div>
+                                    {React.createElement(FaChartLine as React.ComponentType<any>, {
+                                        size: 34,
+                                        color: "black",
+                                        className: "my-icon-class"
+                                    })}
+                                </div>
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
 
-            <div className={"currency-tracked-column"}>
+                <div className={"currency-tracked-column"}>
                 {trackedCurrencies
                     .filter((tracked, index, self) =>
                             index === self.findIndex(t =>
@@ -264,6 +271,7 @@ function Currencies() {
                             </div>
                         </div>
                     ))}
+            </div>
             </div>
         </div>
     );
