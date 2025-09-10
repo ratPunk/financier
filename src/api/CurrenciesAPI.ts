@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_KEY = process.env.REACT_APP_EXCHANGERATE_API_KEY;
+console.log(API_KEY);
 
 const API = axios.create({
     baseURL: `https://v6.exchangerate-api.com/v6/${API_KEY}`,

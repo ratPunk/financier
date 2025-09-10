@@ -5,6 +5,7 @@ import "../css/cssPages/currencies.css";
 import {LiaExchangeAltSolid} from "react-icons/lia";
 import {FaChartLine, FaEye} from "react-icons/fa6";
 import {IoClose} from "react-icons/io5";
+import CurrencyChartWithRange from '../components/CurrencyChartWithRange';
 
 interface trackedCurrenciesObject {
     id: number;
@@ -13,8 +14,8 @@ interface trackedCurrenciesObject {
 }
 
 function Currencies() {
-    const [mainCurrencies, setMainCurrencies] = useState('USD');
-    const [secondCurrencies, setSecondCurrencies] = useState('USD');
+    const [mainCurrencies, setMainCurrencies] = useState<string>('USD');
+    const [secondCurrencies, setSecondCurrencies] = useState<string>('EUR');
     const [rates, setRates] = useState<any>();
     const [leftSearch, setLeftSearch] = useState('');
     const [rightSearch, setRightSearch] = useState('');
@@ -128,7 +129,7 @@ function Currencies() {
                                 <div>
                                 {code.chart && React.createElement(FaChartLine as React.ComponentType<any>, {
                                     size: 32,
-                                    color: "black",
+                                    color: "#4361ee",
                                     className: "my-icon-class"
                                 })}
                                 </div>
@@ -175,7 +176,10 @@ function Currencies() {
                             : <p>Выберете сравнительную валюту</p>}
                     </div>
                     <div className={"currency-chart-historical-data"}>
-
+                        <CurrencyChartWithRange
+                            mainCurrency={mainCurrencies}
+                            secondaryCurrency={secondCurrencies}
+                        />
                     </div>
                     <div className={"currency-button"}>
                         <button className={"action-btn"} onClick={handleClick}>Отслеживать</button>
@@ -208,7 +212,7 @@ function Currencies() {
                                 <div>
                                     {code.chart && React.createElement(FaChartLine as React.ComponentType<any>, {
                                         size: 32,
-                                        color: "black",
+                                        color: "#4361ee",
                                         className: "my-icon-class"
                                     })}
                                 </div>

@@ -124,7 +124,6 @@
 .currency-info {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(2, 1fr);
     gap: 1.5rem;
     padding: 0 1rem;
 }
@@ -139,6 +138,10 @@
 }
 .exchange{
     cursor: pointer;
+}
+
+#tv-attr-logo{
+    display: none;
 }
 
 .currency-button{
