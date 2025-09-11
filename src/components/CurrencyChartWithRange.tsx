@@ -152,6 +152,7 @@ const CurrencyChartWithRange: React.FC<CurrencyChartProps> = ({
             {/* Состояние загрузки/ошибки */}
             {isLoading && (
                 <div className="loading-state">
+                    <div className="loader"></div>
                     Загрузка данных...
                 </div>
             )}
