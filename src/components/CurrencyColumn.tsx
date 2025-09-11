@@ -17,6 +17,7 @@ interface CurrencyColumnProps {
     onCurrencySelect: (code: string) => void;
     chartVisible: boolean;
     onChartToggle: () => void;
+    propsClassName?: string;
 }
 
 const CurrencyColumn: React.FC<CurrencyColumnProps> = ({
@@ -27,10 +28,11 @@ const CurrencyColumn: React.FC<CurrencyColumnProps> = ({
                                                            selectedCurrency,
                                                            onCurrencySelect,
                                                            chartVisible,
-                                                           onChartToggle
+                                                           onChartToggle,
+                                                           propsClassName,
                                                        }) => {
     return (
-        <div className={"currency-column"}>
+        <div className={`currency-column ${propsClassName}`}>
             <p>{title}</p>
             <div className={"filters-currency-column"}>
                 <input

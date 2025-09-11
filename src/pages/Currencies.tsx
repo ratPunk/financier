@@ -143,6 +143,7 @@ function Currencies() {
                         onCurrencySelect={setMainCurrencies}
                         chartVisible={chartVisibleLeft}
                         onChartToggle={() => setChartVisibleLeft(!chartVisibleLeft)}
+                        propsClassName={"main-currency-column"}
                     />
 
                     <div className={"currency-info"}>
@@ -199,6 +200,7 @@ function Currencies() {
                         onCurrencySelect={setSecondCurrencies}
                         chartVisible={chartVisibleRight}
                         onChartToggle={() => setChartVisibleRight(!chartVisibleRight)}
+                        propsClassName={"second-currency-column"}
                     />
 
                 </div>
