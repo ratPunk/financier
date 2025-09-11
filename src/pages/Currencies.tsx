@@ -21,6 +21,8 @@ function Currencies() {
     const [rightSearch, setRightSearch] = useState('');
     const [mainCurrenciesQuantity, setMainCurrenciesQuantity] = useState<any>();
     const [trackedCurrencies, setTrackedCurrencies] = useState<trackedCurrenciesObject[]>([]);
+    const [chartVisibleLeft, setChartVisibleLeft] = useState<boolean>(false);
+    const [chartVisibleRight, setChartVisibleRight] = useState<boolean>(false);
 
     useEffect(() => {
         const loadRates = async () => {
@@ -38,15 +40,38 @@ function Currencies() {
         loadRates();
     }, [mainCurrencies]);
 
-    const filteredLeftCurrencies = CurrenciesCode.filter(code =>
-        code.code.toLowerCase().includes(leftSearch.toLowerCase()) ||
-        code.label.toLowerCase().includes(leftSearch.toLowerCase())
-    );
 
-    const filteredRightCurrencies = CurrenciesCode.filter(code =>
-        code.code.toLowerCase().includes(rightSearch.toLowerCase()) ||
-        code.label.toLowerCase().includes(rightSearch.toLowerCase())
-    );
+    const filteredLeftCurrencies = CurrenciesCode.filter(code => {
+        const matchesSearch =
+            code.code.toLowerCase().includes(leftSearch.toLowerCase()) ||
+            code.label.toLowerCase().includes(leftSearch.toLowerCase());
+
+        const hasChart = code.chart;
+
+        // Если включен фильтр по графику, показываем только валюты с графиком
+        if (chartVisibleLeft) {
+            return hasChart && matchesSearch;
+        }
+
+        // Если фильтр по графику выключен, показываем все валюты, соответствующие поиску
+        return matchesSearch;
+    });
+
+    const filteredRightCurrencies = CurrenciesCode.filter(code => {
+        const matchesSearch =
+            code.code.toLowerCase().includes(rightSearch.toLowerCase()) ||
+            code.label.toLowerCase().includes(rightSearch.toLowerCase());
+
+        const hasChart = code.chart;
+
+        // Если включен фильтр по графику, показываем только валюты с графиком
+        if (chartVisibleRight) {
+            return hasChart && matchesSearch;
+        }
+
+        // Если фильтр по графику выключен, показываем все валюты, соответствующие поиску
+        return matchesSearch;
+    });
 
     const handleChange = (e: any) => {
         const value = e.target.value;
@@ -105,13 +130,26 @@ function Currencies() {
             <div className={"currencies-main"}>
                 <div className={"currency-column main-currency-column"}>
                     <p>Основная валюта</p>
-                    <input
-                        type="text"
-                        placeholder="Поиск валюты..."
-                        value={leftSearch}
-                        onChange={(e) => setLeftSearch(e.target.value)}
-                        className="currency-search"
-                    />
+                    <div className={"filters-currency-column"}>
+                        <input
+                            type="text"
+                            placeholder="Поиск валюты..."
+                            value={leftSearch}
+                            onChange={(e) => setLeftSearch(e.target.value)}
+                            className="currency-search"
+                        />
+                        <button
+                            onClick={() => setChartVisibleLeft(!chartVisibleLeft)}
+                            className={chartVisibleLeft ? 'chart-visible' : ''}
+                        >
+                            {React.createElement(FaChartLine as React.ComponentType<any>, {
+                                size: 28,
+                                color: chartVisibleLeft ? "#4361ee" : "#6c757d",
+                                className: "chart-icon"
+                            })}
+                        </button>
+                    </div>
+
                     <div className={"currency-code-select"}>
                         {filteredLeftCurrencies.map((code) => (
                             <div
@@ -127,11 +165,11 @@ function Currencies() {
                                 <span>{code.label}</span>
                                     </span>
                                 <div>
-                                {code.chart && React.createElement(FaChartLine as React.ComponentType<any>, {
-                                    size: 32,
-                                    color: "#4361ee",
-                                    className: "my-icon-class"
-                                })}
+                                    {code.chart && React.createElement(FaChartLine as React.ComponentType<any>, {
+                                        size: 32,
+                                        color: "#4361ee",
+                                        className: "my-icon-class"
+                                    })}
                                 </div>
                             </div>
                         ))}
@@ -188,13 +226,25 @@ function Currencies() {
 
                 <div className={"currency-column second-currency-column"}>
                     <p>Сравнительная валюта валюта</p>
-                    <input
-                        type="text"
-                        placeholder="Поиск валюты..."
-                        value={rightSearch}
-                        onChange={(e) => setRightSearch(e.target.value)}
-                        className="currency-search"
-                    />
+                    <div className={"filters-currency-column"}>
+                        <input
+                            type="text"
+                            placeholder="Поиск валюты..."
+                            value={rightSearch}
+                            onChange={(e) => setRightSearch(e.target.value)}
+                            className="currency-search"
+                        />
+                        <button
+                            onClick={() => setChartVisibleRight(!chartVisibleRight)}
+                            className={chartVisibleRight ? 'chart-visible' : ''}
+                        >
+                            {React.createElement(FaChartLine as React.ComponentType<any>, {
+                                size: 28, // Уменьшил размер для кнопки
+                                color: chartVisibleRight ? "#4361ee" : "#6c757d",
+                                className: "chart-icon"
+                            })}
+                        </button>
+                    </div>
                     <div className={"currency-code-select"}>
                         {filteredRightCurrencies.map((code) => (
                             <div
@@ -223,8 +273,8 @@ function Currencies() {
             </div>
 
                 <div className={"currency-tracked-column"}>
-                {trackedCurrencies
-                    .filter((tracked, index, self) =>
+                    {trackedCurrencies
+                        .filter((tracked, index, self) =>
                             index === self.findIndex(t =>
                                 t.mainCurrencies === tracked.mainCurrencies &&
                                 t.secondCurrencies === tracked.secondCurrencies

@@ -69,7 +69,7 @@ const CurrencyChartWithRange: React.FC<CurrencyChartProps> = ({
 
         const chart = createChart(chartContainerRef.current, {
             layout: {
-                background: { type: ColorType.Solid, color: '#F5F5F5' },
+                background: { type: ColorType.Solid, color: '#f8f9fa' },
                 textColor: '#131722',
             },
             grid: {
