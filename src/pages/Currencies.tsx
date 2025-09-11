@@ -6,6 +6,8 @@ import {LiaExchangeAltSolid} from "react-icons/lia";
 import {FaChartLine, FaEye} from "react-icons/fa6";
 import {IoClose} from "react-icons/io5";
 import CurrencyChartWithRange from '../components/CurrencyChartWithRange';
+import CurrencyColumn from '../components/CurrencyColumn';
+import CurrencyRecord from '../components/CurrencyRecord';
 
 interface trackedCurrenciesObject {
     id: number;
@@ -40,7 +42,6 @@ function Currencies() {
         loadRates();
     }, [mainCurrencies]);
 
-
     const filteredLeftCurrencies = CurrenciesCode.filter(code => {
         const matchesSearch =
             code.code.toLowerCase().includes(leftSearch.toLowerCase()) ||
@@ -48,12 +49,10 @@ function Currencies() {
 
         const hasChart = code.chart;
 
-        // Если включен фильтр по графику, показываем только валюты с графиком
         if (chartVisibleLeft) {
             return hasChart && matchesSearch;
         }
 
-        // Если фильтр по графику выключен, показываем все валюты, соответствующие поиску
         return matchesSearch;
     });
 
@@ -64,12 +63,10 @@ function Currencies() {
 
         const hasChart = code.chart;
 
-        // Если включен фильтр по графику, показываем только валюты с графиком
         if (chartVisibleRight) {
             return hasChart && matchesSearch;
         }
 
-        // Если фильтр по графику выключен, показываем все валюты, соответствующие поиску
         return matchesSearch;
     });
 
@@ -95,7 +92,6 @@ function Currencies() {
         e.preventDefault();
 
         setTrackedCurrencies((prev) => {
-            // Проверяем, есть ли уже такая пара
             const exists = prev.some(
                 item =>
                     item.mainCurrencies === mainCurrencies &&
@@ -104,7 +100,7 @@ function Currencies() {
 
             if (exists) {
                 console.log('Такая пара уже отслеживается');
-                return prev; // Не добавляем
+                return prev;
             }
 
             return [
@@ -118,6 +114,15 @@ function Currencies() {
         });
     };
 
+    const handleRemoveTracked = (id: number) => {
+        setTrackedCurrencies(trackedCurrencies.filter(item => item.id !== id));
+    };
+
+    const handleSelectTracked = (main: string, second: string) => {
+        setMainCurrencies(main);
+        setSecondCurrencies(second);
+    };
+
     useEffect(() => {
         if (trackedCurrencies.length > 6) {
             setTrackedCurrencies(prev => prev.slice(1))
@@ -127,208 +132,95 @@ function Currencies() {
     return (
         <div id={"Currencies"}>
             <div className={"main-container"}>
-            <div className={"currencies-main"}>
-                <div className={"currency-column main-currency-column"}>
-                    <p>Основная валюта</p>
-                    <div className={"filters-currency-column"}>
-                        <input
-                            type="text"
-                            placeholder="Поиск валюты..."
-                            value={leftSearch}
-                            onChange={(e) => setLeftSearch(e.target.value)}
-                            className="currency-search"
-                        />
-                        <button
-                            onClick={() => setChartVisibleLeft(!chartVisibleLeft)}
-                            className={chartVisibleLeft ? 'chart-visible' : ''}
-                        >
-                            {React.createElement(FaChartLine as React.ComponentType<any>, {
-                                size: 28,
-                                color: chartVisibleLeft ? "#4361ee" : "#6c757d",
-                                className: "chart-icon"
-                            })}
-                        </button>
-                    </div>
+                <div className={"currencies-main"}>
 
-                    <div className={"currency-code-select"}>
-                        {filteredLeftCurrencies.map((code) => (
-                            <div
-                                key={code.code}
-                                onClick={() => {
-                                    setMainCurrencies(code.code);
-                                    console.log(mainCurrencies);
-                                }}
-                                className={`currency-btn ${mainCurrencies === code.code ? 'active' : ''}`}
-                            >
-                                <span className={"currency-code-and-name"}>
-                                <span>{code.code}</span>
-                                <span>{code.label}</span>
-                                    </span>
+                    <CurrencyColumn
+                        title="Основная валюта"
+                        currencies={filteredLeftCurrencies}
+                        searchValue={leftSearch}
+                        onSearchChange={setLeftSearch}
+                        selectedCurrency={mainCurrencies}
+                        onCurrencySelect={setMainCurrencies}
+                        chartVisible={chartVisibleLeft}
+                        onChartToggle={() => setChartVisibleLeft(!chartVisibleLeft)}
+                    />
+
+                    <div className={"currency-info"}>
+                        <div className={"main-currency-info"}>
+                            {rates ?
                                 <div>
-                                    {code.chart && React.createElement(FaChartLine as React.ComponentType<any>, {
-                                        size: 32,
-                                        color: "#4361ee",
-                                        className: "my-icon-class"
-                                    })}
+                                    <p>{mainCurrencies}</p>
+                                    <input
+                                        type="text"
+                                        pattern="[0-9]*"
+                                        inputMode="numeric"
+                                        onChange={handleChange}
+                                        value={mainCurrenciesQuantity}
+                                    />
                                 </div>
+                                : <p>Выберете основную валюту</p>}
+                            <div className={"exchange"} onClick={handleClickExchange}>
+                                {React.createElement(LiaExchangeAltSolid as React.ComponentType<any>, {
+                                    size: 32,
+                                    color: "#4361ee",
+                                    className: "my-icon-class"
+                                })}
                             </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className={"currency-info"}>
-                    <div className={"main-currency-info"}>
-                        {rates ?
-                            <div>
-                                <p>{mainCurrencies}</p>
-                                <input
-                                    type="text"
-                                    pattern="[0-9]*"
-                                    inputMode="numeric"
-                                    onChange={handleChange}
-                                    value={mainCurrenciesQuantity}
-                                />
-
-                            </div>
-                            : <p>Выберете основную валюту</p>}
-                        <div className={"exchange"} onClick={handleClickExchange}>
-                            {React.createElement(LiaExchangeAltSolid as React.ComponentType<any>, {
-                                size: 32,
-                                color: "#4361ee",
-                                className: "my-icon-class"
-                            })}
+                            {rates ?
+                                <div>
+                                    <p>{secondCurrencies}</p>
+                                    <input
+                                        type="text"
+                                        pattern="[0-9]*"
+                                        inputMode="numeric"
+                                        disabled
+                                        value={mainCurrenciesQuantity ? (mainCurrenciesQuantity * rates?.[secondCurrencies]).toFixed(2) : ""}
+                                    />
+                                </div>
+                                : <p>Выберете сравнительную валюту</p>}
                         </div>
-                        {rates ?
-                            <div>
-                                <p>{secondCurrencies}</p>
-                                <input
-                                    type="text"
-                                    pattern="[0-9]*"
-                                    inputMode="numeric"
-                                    disabled
-                                    value={mainCurrenciesQuantity ? (mainCurrenciesQuantity * rates?.[secondCurrencies]).toFixed(2) : ""}
-                                />
+                        <div className={"currency-chart-historical-data"}>
+                            <CurrencyChartWithRange
+                                mainCurrency={mainCurrencies}
+                                secondaryCurrency={secondCurrencies}
+                            />
+                        </div>
+                        <div className={"currency-button"}>
+                            <button className={"action-btn"} onClick={handleClick}>Отслеживать</button>
+                        </div>
+                    </div>
 
+                    <CurrencyColumn
+                        title="Сравнительная валюта"
+                        currencies={filteredRightCurrencies}
+                        searchValue={rightSearch}
+                        onSearchChange={setRightSearch}
+                        selectedCurrency={secondCurrencies}
+                        onCurrencySelect={setSecondCurrencies}
+                        chartVisible={chartVisibleRight}
+                        onChartToggle={() => setChartVisibleRight(!chartVisibleRight)}
+                    />
 
-                            </div>
-                            : <p>Выберете сравнительную валюту</p>}
-                    </div>
-                    <div className={"currency-chart-historical-data"}>
-                        <CurrencyChartWithRange
-                            mainCurrency={mainCurrencies}
-                            secondaryCurrency={secondCurrencies}
-                        />
-                    </div>
-                    <div className={"currency-button"}>
-                        <button className={"action-btn"} onClick={handleClick}>Отслеживать</button>
-                    </div>
                 </div>
-
-                <div className={"currency-column second-currency-column"}>
-                    <p>Сравнительная валюта валюта</p>
-                    <div className={"filters-currency-column"}>
-                        <input
-                            type="text"
-                            placeholder="Поиск валюты..."
-                            value={rightSearch}
-                            onChange={(e) => setRightSearch(e.target.value)}
-                            className="currency-search"
-                        />
-                        <button
-                            onClick={() => setChartVisibleRight(!chartVisibleRight)}
-                            className={chartVisibleRight ? 'chart-visible' : ''}
-                        >
-                            {React.createElement(FaChartLine as React.ComponentType<any>, {
-                                size: 28, // Уменьшил размер для кнопки
-                                color: chartVisibleRight ? "#4361ee" : "#6c757d",
-                                className: "chart-icon"
-                            })}
-                        </button>
-                    </div>
-                    <div className={"currency-code-select"}>
-                        {filteredRightCurrencies.map((code) => (
-                            <div
-                                key={code.code}
-                                onClick={() => {
-                                    setSecondCurrencies(code.code);
-                                    console.log(secondCurrencies);
-                                }}
-                                className={`currency-btn ${secondCurrencies === code.code ? 'active' : ''}`}
-                            >
-                               <span className={"currency-code-and-name"}>
-                                <span>{code.code}</span>
-                                <span>{code.label}</span>
-                                    </span>
-                                <div>
-                                    {code.chart && React.createElement(FaChartLine as React.ComponentType<any>, {
-                                        size: 32,
-                                        color: "#4361ee",
-                                        className: "my-icon-class"
-                                    })}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
 
                 <div className={"currency-tracked-column"}>
                     {trackedCurrencies
                         .filter((tracked, index, self) =>
-                            index === self.findIndex(t =>
-                                t.mainCurrencies === tracked.mainCurrencies &&
-                                t.secondCurrencies === tracked.secondCurrencies
-                            )
-                    )
-                    .sort((a, b) => b.id - a.id)
-                    .map((tracked) => (
-                        <div className={"currency-record"}>
-                            <div
-                                key={tracked.mainCurrencies}
-                                onClick={() => {
-
-                                }}
-                                className={`currency-tracked-btn`}
-                            >
-                                <span>{tracked.mainCurrencies}</span>
-                                {React.createElement(LiaExchangeAltSolid as React.ComponentType<any>, {
-                                    size: 34,
-                                    color: "black",
-                                    className: "my-icon-class"
-                                })}
-                                <span>{tracked.secondCurrencies}</span>
-                            </div>
-                            <div className={`currency-tracked-btn-actions`}>
-                                <button
-                                    className={"close-btn"}
-                                    onClick={() => {
-                                        setTrackedCurrencies(
-                                            trackedCurrencies.filter(item => item.id !== tracked.id)
-                                        );
-                                    }}
-                                >
-                                    {React.createElement(IoClose as React.ComponentType<any>, {
-                                        size: 34,
-                                        color: "#ee4343",
-                                        className: "my-icon-class"
-                                    })}
-                                </button>
-                                <button
-                                    className={"eye-btn"}
-                                    onClick={() => {
-                                        setMainCurrencies(tracked.mainCurrencies);
-                                        setSecondCurrencies(tracked.secondCurrencies);
-                                    }}>
-                                    {React.createElement(FaEye as React.ComponentType<any>, {
-                                        size: 34,
-                                        color: "#4361ee",
-                                        className: "my-icon-class"
-                                    })}
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-            </div>
+                                index === self.findIndex(t =>
+                                    t.mainCurrencies === tracked.mainCurrencies &&
+                                    t.secondCurrencies === tracked.secondCurrencies
+                                )
+                        )
+                        .sort((a, b) => b.id - a.id)
+                        .map((tracked) => (
+                            <CurrencyRecord
+                                key={tracked.id}
+                                tracked={tracked}
+                                onRemove={handleRemoveTracked}
+                                onSelect={handleSelectTracked}
+                            />
+                        ))}
+                </div>
             </div>
         </div>
     );

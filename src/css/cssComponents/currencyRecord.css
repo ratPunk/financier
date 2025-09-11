@@ -1,0 +1,41 @@
+.currency-record{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+    padding: 0 1rem;
+}
+.currency-tracked-btn{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    transition: all 0.2s ease;
+    padding: 0.75rem 1.25rem;
+    /*width: 100%;*/
+    cursor: pointer;
+    border: none;
+    background: transparent;
+}
+.currency-tracked-btn-actions{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+.currency-tracked-btn-actions button{
+    cursor: pointer;
+    border: none;
+    background: none;
+    transition: 0.3s;
+}
+.close-btn{
+    transition: 0.3s;
+}
+.close-btn:hover{
+    transform: rotate(0.25turn);
+}

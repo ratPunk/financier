@@ -31,81 +31,8 @@
 }
 
 
-.currency-column {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-.currency-column p{
-    color: #757575;
-}
-.currency-code-select {
-    border: 1px solid #e1e5eb;
-    padding: 1rem 0;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 0.5rem;
-    max-height: 500px;
-    width: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    background: #fafbfc;
-}
 
-.currency-code-select::-webkit-scrollbar {
-    width: 6px;
-}
 
-.currency-code-select::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
-.currency-code-select::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
-}
-
-.currency-code-select::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
-
-.currency-btn {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    transition: all 0.2s ease;
-    padding: 0.75rem 0;
-    width: 100%;
-    cursor: pointer;
-    border: none;
-    background: transparent;
-}
-.currency-code-and-name{
-    display: flex;
-    gap: 1rem;
-    margin-left: 1rem;
-}
-.currency-btn svg{
-    margin-right: 1rem;
-}
-
-.currency-btn:hover {
-    background-color: #e9ecef;
-}
-
-.currency-btn.active {
-    background-color: #4361ee;
-    color: white;
-    font-weight: 500;
-}
-.currency-btn.active svg{
-    fill: white;
-}
 
 .currency-code {
     font-weight: 600;
@@ -189,56 +116,6 @@
     margin: 0;
 }
 
-.filters-currency-column{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
-    background: #f8f9fa;
-    padding: 1rem 0.5rem;
-    border-radius: 12px;
-    border: 1px solid #e1e5eb;
-}
-
-.currency-search {
-    padding: 0.75rem;
-    border: 1px solid #e1e5eb;
-    border-radius: 6px;
-    font-size: 1rem;
-    width: 100%;
-}
-.filters-currency-column button{
-    background: #fff;
-    border: none;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    padding: 0.41rem;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: 0.3s ease;
-    border: 1px solid #e1e5eb;
-}
-.chart-visible{
-    background: #4361ee !important;
-    border: 1px solid rgba(255, 255, 255, 0) !important;
-}
-.chart-visible svg{
-    fill: white !important;
-}
-.filters-currency-column button:hover {
-    background: #4361ee;
-    border: 1px solid rgba(255, 255, 255, 0);
-}
-.filters-currency-column button:hover svg{
-    fill: white;
-}
-
-.currency-search:focus {
-    outline: none;
-    border-color: #4361ee;
-    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
-}
 input{
     border-radius: 0.5rem;
     padding: 0.5rem;
@@ -282,47 +159,9 @@ input:focus{
 
     width: 100%;
 }
-.currency-record{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-
-    padding: 0 1rem;
 
 
-}
 
-.currency-tracked-btn{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 1rem;
-    transition: all 0.2s ease;
-    padding: 0.75rem 1.25rem;
-    /*width: 100%;*/
-    cursor: pointer;
-    border: none;
-    background: transparent;
-}
-.currency-tracked-btn-actions{
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-}
-.currency-tracked-btn-actions button{
-    cursor: pointer;
-    border: none;
-    background: none;
-    transition: 0.3s;
-}
-.close-btn{
-
-}
 
 @media (max-width: 900px) {
     #Currencies{
