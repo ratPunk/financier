@@ -1,11 +1,16 @@
 import axios from 'axios';
 
+const API_KEY = 'fxr_live_fbdba870dbfcb4bc02e8bba0f286ecdd7e99';
+
 const API = axios.create({
-    baseURL: `https://api.frankfurter.app/`,
+    baseURL: `https://api.fxratesapi.com`,
+    headers: {
+        Authorization: `Bearer ${API_KEY}`,
+    },
 });
 
 export interface HistoricalCurrencyProps {
-    period: '1W' | '1M' | '3M' | '6M' | '1Y';
+    period: '1W' | '1M' | '3M' | '6M';
     mainCurrency: string;
     secondaryCurrency: string;
 }
@@ -17,7 +22,7 @@ export interface RateData {
 }
 
 export interface ApiResponse {
-    amount: number;
+    success: boolean;
     base: string;
     start_date: string;
     end_date: string;
@@ -47,9 +52,6 @@ export const HistoricalCurrencyData = async ({
         case '6M':
             today.setMonth(today.getMonth() - 6);
             break;
-        case '1Y':
-            today.setFullYear(today.getFullYear() - 1);
-            break;
         default:
             throw new Error("Invalid period");
     }
@@ -57,9 +59,14 @@ export const HistoricalCurrencyData = async ({
     startDate = today.toISOString().split('T')[0];
 
     try {
-        const response = await API.get<ApiResponse>(
-            `${startDate}..${endDate}?from=${mainCurrency}&to=${secondaryCurrency}`
-        );
+        const response = await API.get<ApiResponse>(`/timeseries`, {
+            params: {
+                start_date: startDate,
+                end_date: endDate,
+                base: mainCurrency,
+                currencies: secondaryCurrency,
+            },
+        });
         return response.data.rates;
     } catch (error) {
         console.error('Error fetching currency data:', error);

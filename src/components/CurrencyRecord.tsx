@@ -27,8 +27,7 @@ const CurrencyRecord: React.FC<CurrencyRecordProps> = ({
                 <span>{tracked.mainCurrencies}</span>
                 {React.createElement(LiaExchangeAltSolid as React.ComponentType<any>, {
                     size: 34,
-                    color: "black",
-                    className: "my-icon-class"
+                    className: "my-icon-class tracked-arrow-icon"
                 })}
                 <span>{tracked.secondCurrencies}</span>
             </div>

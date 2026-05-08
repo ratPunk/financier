@@ -20,7 +20,7 @@
 }
 .currencies-main {
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-columns: 320px minmax(0, 1fr) 320px;
     gap: 1.5rem;
     max-width: 100%;
     /*margin: 0 auto;*/
@@ -51,7 +51,6 @@
 .currency-info {
     display: grid;
     grid-template-columns: 1fr;
-    /*grid-template-rows: 1fr 5fr;*/
     gap: 1.5rem;
     padding: 0 1rem;
 }
@@ -60,12 +59,39 @@
     flex-direction: row;
     align-items: end;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 1rem;
 
     align-self: flex-start;
+
+    background: #f8f9fa;
+    border: 1px solid #e1e5eb;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+}
+.main-currency-info > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+.main-currency-info p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
 }
 .exchange{
     cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 50%;
+    transition: background 0.25s ease, transform 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.exchange:hover{
+    background: rgba(67, 97, 238, 0.1);
+    transform: rotate(180deg);
 }
 
 #tv-attr-logo{
@@ -131,21 +157,28 @@ input:focus{
     outline: none;
 }
 .action-btn{
-    background: #4361ee;
-    border-radius: 0.5rem;
+    background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
+    border-radius: 0.6rem;
     width: 100%;
     padding: 1rem;
     color: white;
     font-weight: bold;
     font-size: 1.2rem;
     border: none;
+    box-shadow: 0 4px 14px rgba(67, 97, 238, 0.3);
 
     cursor: pointer;
 
-    transition: 0.3s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
 }
 .action-btn:hover{
-    background: #2e4dd6;
+    background: linear-gradient(135deg, #3a56d4 0%, #2e4dd6 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(67, 97, 238, 0.4);
+}
+.action-btn:active{
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.3);
 }
 
 
@@ -171,7 +204,7 @@ input:focus{
     }
     .currencies-main {
         grid-template-columns: 1fr 1fr;
-        grid-template-rows: repeat(2, 1fr);
+        grid-template-rows: repeat(2, auto);
         gap: 1rem;
         justify-content: center;
     }

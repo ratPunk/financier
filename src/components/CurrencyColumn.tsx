@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaChartLine } from "react-icons/fa6";
 import "../css/cssComponents/currencyColumn.css";
 
@@ -31,13 +32,15 @@ const CurrencyColumn: React.FC<CurrencyColumnProps> = ({
                                                            onChartToggle,
                                                            propsClassName,
                                                        }) => {
+    const { t } = useTranslation();
     return (
         <div className={`currency-column ${propsClassName}`}>
             <p>{title}</p>
             <div className={"filters-currency-column"}>
                 <input
                     type="text"
-                    placeholder="Поиск валюты..."
+                    placeholder={t('currencies.search')}
+                    aria-label={t('currencies.search')}
                     value={searchValue}
                     onChange={(e) => onSearchChange(e.target.value)}
                     className="currency-search"

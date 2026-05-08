@@ -1,13 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import {getCurrency} from '../api/CurrenciesAPI';
+import React, {useEffect, useMemo, useState} from 'react';
+import { useTranslation } from 'react-i18next';
+import {getCurrency, getSupportedCurrencies} from '../api/CurrenciesAPI';
 import CurrenciesCode from "../ts/CurrenciesCode";
 import "../css/cssPages/currencies.css";
 import {LiaExchangeAltSolid} from "react-icons/lia";
-import {FaChartLine, FaEye} from "react-icons/fa6";
-import {IoClose} from "react-icons/io5";
 import CurrencyChartWithRange from '../components/CurrencyChartWithRange';
 import CurrencyColumn from '../components/CurrencyColumn';
 import CurrencyRecord from '../components/CurrencyRecord';
+import { useAuth } from '../auth/AuthContext';
+import { TrackedAPI } from '../api/AuthAPI';
 
 interface trackedCurrenciesObject {
     id: number;
@@ -16,6 +17,8 @@ interface trackedCurrenciesObject {
 }
 
 function Currencies() {
+    const { user } = useAuth();
+    const { t } = useTranslation();
     const [mainCurrencies, setMainCurrencies] = useState<string>('USD');
     const [secondCurrencies, setSecondCurrencies] = useState<string>('EUR');
     const [rates, setRates] = useState<any>();
@@ -25,14 +28,58 @@ function Currencies() {
     const [trackedCurrencies, setTrackedCurrencies] = useState<trackedCurrenciesObject[]>([]);
     const [chartVisibleLeft, setChartVisibleLeft] = useState<boolean>(false);
     const [chartVisibleRight, setChartVisibleRight] = useState<boolean>(false);
+    const [chartSupportedCodes, setChartSupportedCodes] = useState<Set<string>>(new Set());
+    const [trackError, setTrackError] = useState<string | null>(null);
+
+    // Load tracked pairs from server when user logs in; clear on logout
+    useEffect(() => {
+        let cancelled = false;
+        if (!user) {
+            setTrackedCurrencies([]);
+            return;
+        }
+        (async () => {
+            try {
+                const items = await TrackedAPI.list();
+                if (!cancelled) setTrackedCurrencies(items);
+            } catch (e) {
+                console.error('Failed to load tracked currencies', e);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, [user]);
+
+    useEffect(() => {
+        let cancelled = false;
+        getSupportedCurrencies().then((codes) => {
+            if (cancelled) return;
+            setChartSupportedCodes(new Set(codes));
+        });
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const currenciesWithChartFlag = useMemo(() => {
+        if (chartSupportedCodes.size === 0) {
+            return CurrenciesCode;
+        }
+        return CurrenciesCode.map((c) => ({
+            ...c,
+            chart: chartSupportedCodes.has(c.code),
+        }));
+    }, [chartSupportedCodes]);
 
     useEffect(() => {
         const loadRates = async () => {
             try {
                 const data = await getCurrency(mainCurrencies);
                 setRates(data);
-                console.log(rates);
-                rates && setMainCurrenciesQuantity(rates[mainCurrencies]);
+                if (data && data[mainCurrencies] !== undefined) {
+                    setMainCurrenciesQuantity((prev: any) =>
+                        prev === undefined || prev === '' ? data[mainCurrencies] : prev
+                    );
+                }
             } catch (error) {
                 console.error('Не удалось загрузить курсы:', error);
                 setRates(null);
@@ -42,33 +89,33 @@ function Currencies() {
         loadRates();
     }, [mainCurrencies]);
 
-    const filteredLeftCurrencies = CurrenciesCode.filter(code => {
-        const matchesSearch =
-            code.code.toLowerCase().includes(leftSearch.toLowerCase()) ||
-            code.label.toLowerCase().includes(leftSearch.toLowerCase());
+    const filteredLeftCurrencies = useMemo(() => {
+        const search = leftSearch.toLowerCase();
+        return currenciesWithChartFlag.filter(code => {
+            const matchesSearch =
+                code.code.toLowerCase().includes(search) ||
+                code.label.toLowerCase().includes(search);
 
-        const hasChart = code.chart;
+            if (chartVisibleLeft) {
+                return code.chart && matchesSearch;
+            }
+            return matchesSearch;
+        });
+    }, [currenciesWithChartFlag, leftSearch, chartVisibleLeft]);
 
-        if (chartVisibleLeft) {
-            return hasChart && matchesSearch;
-        }
+    const filteredRightCurrencies = useMemo(() => {
+        const search = rightSearch.toLowerCase();
+        return currenciesWithChartFlag.filter(code => {
+            const matchesSearch =
+                code.code.toLowerCase().includes(search) ||
+                code.label.toLowerCase().includes(search);
 
-        return matchesSearch;
-    });
-
-    const filteredRightCurrencies = CurrenciesCode.filter(code => {
-        const matchesSearch =
-            code.code.toLowerCase().includes(rightSearch.toLowerCase()) ||
-            code.label.toLowerCase().includes(rightSearch.toLowerCase());
-
-        const hasChart = code.chart;
-
-        if (chartVisibleRight) {
-            return hasChart && matchesSearch;
-        }
-
-        return matchesSearch;
-    });
+            if (chartVisibleRight) {
+                return code.chart && matchesSearch;
+            }
+            return matchesSearch;
+        });
+    }, [currenciesWithChartFlag, rightSearch, chartVisibleRight]);
 
     const handleChange = (e: any) => {
         const value = e.target.value;
@@ -88,34 +135,48 @@ function Currencies() {
         setSecondCurrencies(temp);
     };
 
-    const handleClick = (e: any) => {
+    const handleClick = async (e: any) => {
         e.preventDefault();
+        setTrackError(null);
 
-        setTrackedCurrencies((prev) => {
-            const exists = prev.some(
-                item =>
-                    item.mainCurrencies === mainCurrencies &&
-                    item.secondCurrencies === secondCurrencies
-            );
+        if (!user) {
+            setTrackError(t('currencies.loginToTrack'));
+            return;
+        }
+        if (mainCurrencies === secondCurrencies) {
+            setTrackError(t('currencies.loginToTrack'));
+            return;
+        }
 
-            if (exists) {
-                console.log('Такая пара уже отслеживается');
-                return prev;
-            }
+        const exists = trackedCurrencies.some(
+            item =>
+                item.mainCurrencies === mainCurrencies &&
+                item.secondCurrencies === secondCurrencies
+        );
+        if (exists) return;
 
-            return [
-                ...prev,
-                {
-                    id: Date.now(),
-                    mainCurrencies,
-                    secondCurrencies,
-                },
-            ];
-        });
+        try {
+            const item = await TrackedAPI.add(mainCurrencies, secondCurrencies);
+            setTrackedCurrencies(prev => [
+                ...prev.filter(p => !(p.mainCurrencies === item.mainCurrencies && p.secondCurrencies === item.secondCurrencies)),
+                item,
+            ]);
+        } catch (err: any) {
+            setTrackError(err?.message || 'Не удалось сохранить пару');
+        }
     };
 
-    const handleRemoveTracked = (id: number) => {
-        setTrackedCurrencies(trackedCurrencies.filter(item => item.id !== id));
+    const handleRemoveTracked = async (id: number) => {
+        const prev = trackedCurrencies;
+        setTrackedCurrencies(prev.filter(item => item.id !== id));
+        if (user) {
+            try {
+                await TrackedAPI.remove(id);
+            } catch (err) {
+                console.error('Failed to remove tracked', err);
+                setTrackedCurrencies(prev); // rollback
+            }
+        }
     };
 
     const handleSelectTracked = (main: string, second: string) => {
@@ -123,11 +184,6 @@ function Currencies() {
         setSecondCurrencies(second);
     };
 
-    useEffect(() => {
-        if (trackedCurrencies.length > 6) {
-            setTrackedCurrencies(prev => prev.slice(1))
-        }
-    }, [trackedCurrencies]);
 
     return (
         <div id={"Currencies"}>
@@ -135,7 +191,7 @@ function Currencies() {
                 <div className={"currencies-main"}>
 
                     <CurrencyColumn
-                        title="Основная валюта"
+                        title={t('currencies.base')}
                         currencies={filteredLeftCurrencies}
                         searchValue={leftSearch}
                         onSearchChange={setLeftSearch}
@@ -157,9 +213,10 @@ function Currencies() {
                                         inputMode="numeric"
                                         onChange={handleChange}
                                         value={mainCurrenciesQuantity}
+                                        aria-label={t('currencies.amount')}
                                     />
                                 </div>
-                                : <p>Выберете основную валюту</p>}
+                                : <p>{t('currencies.noData')}</p>}
                             <div className={"exchange"} onClick={handleClickExchange}>
                                 {React.createElement(LiaExchangeAltSolid as React.ComponentType<any>, {
                                     size: 32,
@@ -176,9 +233,10 @@ function Currencies() {
                                         inputMode="numeric"
                                         disabled
                                         value={mainCurrenciesQuantity ? (mainCurrenciesQuantity * rates?.[secondCurrencies]).toFixed(2) : ""}
+                                        aria-label={t('currencies.amount')}
                                     />
                                 </div>
-                                : <p>Выберете сравнительную валюту</p>}
+                                : <p>{t('currencies.noData')}</p>}
                         </div>
                         <div className={"currency-chart-historical-data"}>
                             <CurrencyChartWithRange
@@ -187,12 +245,20 @@ function Currencies() {
                             />
                         </div>
                         <div className={"currency-button"}>
-                            <button className={"action-btn"} onClick={handleClick}>Отслеживать</button>
+                            <button
+                                className={"action-btn"}
+                                onClick={handleClick}
+                                disabled={!user}
+                                title={!user ? t('currencies.loginToTrack') : ''}
+                            >
+                                {user ? t('currencies.track') : t('currencies.loginToTrack')}
+                            </button>
+                            {trackError && <div style={{ color: '#b91c1c', marginTop: 8, fontSize: 13 }}>{trackError}</div>}
                         </div>
                     </div>
 
                     <CurrencyColumn
-                        title="Сравнительная валюта"
+                        title={t('currencies.quote')}
                         currencies={filteredRightCurrencies}
                         searchValue={rightSearch}
                         onSearchChange={setRightSearch}

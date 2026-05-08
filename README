@@ -1,0 +1,89 @@
+# Financier
+
+Currency tracker portal: compare currency pairs (e.g., USD vs CHF), view historical charts, and (after registration) save your tracked pairs to the database.
+
+## Stack
+
+- **Frontend**: React 19 + TypeScript (CRA) + axios + recharts/lightweight-charts
+- **Backend**: PHP 8 + PDO/MySQL (single-file router at [`api/index.php`](api/index.php:1))
+- **DB**: MySQL (schema in [`financier.sql`](financier.sql:1))
+
+## Database tables
+
+- `currencies` — supported ISO codes
+- `users` — user accounts (bcrypt password)
+- `user_sessions` — token-based sessions (sent in `X-Auth-Token` header)
+- `user_tracked_currencies` — saved base/quote pairs per user
+
+## Setup
+
+### 1. Import DB
+
+In phpMyAdmin (MAMP usually at http://localhost:8888/phpMyAdmin):
+
+1. Create database `financier` (utf8mb4).
+2. Import [`financier.sql`](financier.sql:1).
+
+### 2. Configure backend
+
+Edit DB credentials in [`api/config.php`](api/config.php:1):
+
+```php
+'user' => 'root',
+'pass' => 'root',   // MAMP default password is 'root'
+```
+
+Adjust `cors_origins` if your React dev server runs on a different port.
+
+### 3. Run PHP (MAMP)
+
+MAMP serves PHP from `htdocs`. The API is reachable at:
+
+```
+http://localhost:8888/financier/api/index.php?action=...
+```
+
+If your MAMP uses port 80, set the env var before running React:
+
+```
+REACT_APP_API_BASE=http://localhost/financier/api/index.php
+```
+
+### 4. Run React
+
+```bash
+yarn install
+yarn start
+```
+
+App opens at http://localhost:3000.
+
+## API
+
+All requests/responses are JSON. Auth requests require header `X-Auth-Token: <token>`.
+
+| Method | URL                                           | Description                    |
+|--------|-----------------------------------------------|--------------------------------|
+| POST   | `?action=register` `{username,email,password}`| Register + auto-login          |
+| POST   | `?action=login` `{login,password}`            | Login (login = email or name)  |
+| POST   | `?action=logout`                              | Invalidate current token       |
+| GET    | `?action=me`                                  | Current user                   |
+| GET    | `?action=currencies`                          | All supported currencies       |
+| GET    | `?action=tracked`                             | List user's tracked pairs      |
+| POST   | `?action=tracked` `{base,quote}`              | Add pair                       |
+| DELETE | `?action=tracked&id=<id>`                     | Remove pair                    |
+
+## How it works
+
+- On launch, [`AuthProvider`](src/auth/AuthContext.tsx:13) loads the saved token from `localStorage` and validates via `?action=me`.
+- The header shows **Войти / Регистрация** or the username + **Выйти**.
+- On the Currencies page, the **Отслеживать** button is disabled until login.
+  After login, pressing it calls [`TrackedAPI.add()`](src/api/AuthAPI.ts:104) which persists the pair (e.g., `USD/CHF`) into `user_tracked_currencies`.
+- Removing a pair calls [`TrackedAPI.remove()`](src/api/AuthAPI.ts:115).
+- Tracked pairs are reloaded from server on every login.
+
+## Notes
+
+- Tokens live 30 days (configurable in [`api/config.php`](api/config.php:13)).
+- CORS is enabled for `http://localhost:3000` and `http://127.0.0.1:3000` by default.
+- If you're not using MAMP, point any PHP server at the `api/` folder; the included [`api/.htaccess`](api/.htaccess:1) routes everything to `index.php`.
